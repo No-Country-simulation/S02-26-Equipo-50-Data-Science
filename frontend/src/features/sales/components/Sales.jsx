@@ -1,5 +1,5 @@
 // src/features/sales/components/Sales.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MainLayout from '../../../shared/layouts/MainLayout';
 import { Card, CardContent } from '../../../shared/components/Card';
 import { Badge } from '../../../shared/components/Badge';
@@ -22,19 +22,13 @@ import imgTarjeta from '../../../assets/tarjeta.png';
 
 export default function Sales() {
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-    const { sales, isLoading, totalSales, addSale, cancelSale } = useSales('today');
+    const { sales, isLoading, totalSales, addSale, refresh } = useSales('today');
 
     const PAYMENT_IMAGES = {
         efectivo: imgEfectivo,
         tarjeta: imgTarjeta,
         yape: imgYape,
         plin: imgPlin,
-    };
-
-    const getPaymentIcon = (method) => {
-        const src = PAYMENT_IMAGES[method];
-        if (src) return <img src={src} alt={method} className="w-5 h-5 object-contain" />;
-        return null;
     };
 
     const formatTime = (date) => {
@@ -47,6 +41,11 @@ export default function Sales() {
         const months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
         const now = new Date();
         return `${days[now.getDay()]} ${now.getDate()} de ${months[now.getMonth()]}`;
+    };
+
+    const handleSaleCreated = () => {
+        setIsAddDialogOpen(false);
+        refresh();
     };
 
     if (isLoading) {
@@ -109,42 +108,37 @@ export default function Sales() {
                                 <CardContent className="p-4">
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="font-semibold text-gray-900">{sale.product_name}</h3>
-                                            <p className="text-sm text-gray-500">
-                                                {sale.quantity} x {formatCurrency(sale.unit_price)}
-                                            </p>
+                                            <div className="space-y-1">
+                                                {sale.items && sale.items.length > 0 ? (
+                                                    sale.items.map((item, idx) => (
+                                                        <div key={idx}>
+                                                            <h3 className="font-semibold text-gray-900">
+                                                                {item.productName || 'Producto'}
+                                                            </h3>
+                                                            <p className="text-sm text-gray-500">
+                                                                {item.quantity} x {formatCurrency(item.unitPrice)}
+                                                            </p>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <h3 className="font-semibold text-gray-900">Venta</h3>
+                                                )}
+                                            </div>
                                             <div className="flex items-center gap-2 mt-2 flex-wrap">
-                                                <Badge variant="secondary" className="gap-1">
-                                                    {getPaymentIcon(sale.payment_method)}
-                                                    <span className="capitalize">{sale.payment_method}</span>
-                                                </Badge>
-                                                {sale.customer_name && (
+                                                {sale.customer && (
                                                     <Badge variant="outline" className="text-xs">
-                                                        {sale.customer_name}
+                                                        {sale.customer.name}
                                                     </Badge>
                                                 )}
                                                 <span className="text-xs text-gray-400">
-                                                    {formatTime(sale.created_at)}
+                                                    {formatTime(sale.createdAt)}
                                                 </span>
                                             </div>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-lg font-bold text-blue-600">
-                                                {formatCurrency(sale.total_price)}
+                                                {formatCurrency(sale.totalAmount || sale.total_price)}
                                             </p>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="text-red-600 hover:text-red-700 hover:bg-red-50 mt-1"
-                                                onClick={() => {
-                                                    if (confirm('¿Anular esta venta?')) {
-                                                        cancelSale.mutate(sale.id);
-                                                    }
-                                                }}
-                                            >
-                                                <X className="w-4 h-4 mr-1" />
-                                                Anular
-                                            </Button>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -177,12 +171,10 @@ export default function Sales() {
                                         quantity: data.quantity,
                                         unitPrice: data.unitPrice
                                     }],
-                                    paymentMethod: data.paymentMethod,
-                                    totalPrice: data.totalPrice // Aunque el backend suele recalcularlo, lo enviamos para consistencia
                                 });
-                                setIsAddDialogOpen(false);
                             }}
                             isLoading={addSale.isPending}
+                            onSuccess={handleSaleCreated}
                         />
                     </DialogContent>
                 </Dialog>
@@ -191,7 +183,7 @@ export default function Sales() {
     );
 }
 
-function SaleForm({ onSubmit, isLoading }) {
+function SaleForm({ onSubmit, isLoading, onSuccess }) {
     const { allProducts: products } = useInventory();
     const { customers } = useCustomers();
 
@@ -204,20 +196,25 @@ function SaleForm({ onSubmit, isLoading }) {
     const selectedProduct = products.find(p => p.id === selectedProductId);
     const totalPrice = quantity * unitPrice;
 
+    useEffect(() => {
+        if (selectedProduct) {
+            setUnitPrice(Number(selectedProduct.price) || 0);
+        }
+    }, [selectedProduct]);
+
     const handleProductChange = (productId) => {
         setSelectedProductId(productId);
         const product = products.find(p => p.id === productId);
         if (product) {
-            setUnitPrice(Number(product.sale_price));
+            setUnitPrice(Number(product.price) || 0);
             setQuantity(1);
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedProduct) return;
 
-        // Validar stock
         const stock = selectedProduct.inventory?.quantity ?? 0;
         if (quantity > stock) {
             alert(`Solo hay ${stock} unidades disponibles`);
@@ -235,6 +232,10 @@ function SaleForm({ onSubmit, isLoading }) {
             totalPrice: totalPrice,
             paymentMethod: paymentMethod,
         });
+
+        if (onSuccess) {
+            onSuccess();
+        }
     };
 
     return (
@@ -271,7 +272,7 @@ function SaleForm({ onSubmit, isLoading }) {
                         id="quantity"
                         type="number"
                         min="1"
-                        max={selectedProduct?.quantity || 999}
+                        max={selectedProduct?.inventory?.quantity || 999}
                         value={quantity}
                         onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
                         required
@@ -295,36 +296,6 @@ function SaleForm({ onSubmit, isLoading }) {
                         required
                         className="h-12"
                     />
-                </div>
-            </div>
-
-            <div className="space-y-2">
-                <Label>Método de pago *</Label>
-                <div className="grid grid-cols-2 gap-2">
-                    {PAYMENT_METHODS.map(({ value, label }) => (
-                        <Button
-                            key={value}
-                            type="button"
-                            variant={paymentMethod === value ? 'default' : 'outline'}
-                            className={cn(
-                                'h-12 flex items-center gap-2',
-                                paymentMethod === value && 'ring-2 ring-blue-500 ring-offset-2'
-                            )}
-                            onClick={() => setPaymentMethod(value)}
-                        >
-                            <img
-                                src={{
-                                    efectivo: imgEfectivo,
-                                    tarjeta: imgTarjeta,
-                                    yape: imgYape,
-                                    plin: imgPlin,
-                                }[value]}
-                                alt={label}
-                                className="w-6 h-6 object-contain"
-                            />
-                            {label}
-                        </Button>
-                    ))}
                 </div>
             </div>
 

@@ -53,9 +53,6 @@ Separacion estricta de dominio y framework. Facilita testing, cambios de tecnolo
 ## Roadmap
 
 - OAuth con Facebook Login
-- Interfaz completa para Gestion de Productos
-- Interfaz completa para Gestion de Clientes
-- Interfaz completa para Gestion de Ventas
 - Exportacion de datos a CSV
 - Sistema de recuperacion de contrasena
 - Soporte multi-tienda por usuario
@@ -186,11 +183,11 @@ Consulta la [guia completa](./USER_GUIDE.md) para instrucciones detalladas sobre
 
 ## Equipo
 
-- Ezequiel Pacheco - Fullstack Developer & Scrum Master
-- Estrella Cruz Ulloa - Data & Frontend Developer
-- Nelson Alexander Borbor Diaz - Data & Fullstack Developer
-- Jose Ardilez Ugaz - Data Scientist & Frontend Developer
-- Daniel Lara - Data Scientist & Backend Developer
+- [Ezequiel Pacheco](https://github.com/EzePacheco) | [LinkedIn](https://www.linkedin.com/in/ezepacheco-dev/) - Fullstack Lead
+- [Estrella Cruz Ulloa](https://github.com/estrellacruzulloa) | [LinkedIn](https://www.linkedin.com/in/estrella-cruz-ulloa-102708275/) - Data & Frontend Developer
+- [Nelson Alexander Borbor Diaz](https://github.com/NelsonBorbor98) - Data & Fullstack Developer
+- [Jose Ardilez Ugaz](https://github.com/JoseloArdiles) | [LinkedIn](https://www.linkedin.com/in/joselo-ardiles-ugaz/) - Data Scientist & Frontend Developer
+- [Daniel Lara](https://github.com/Sts87) | [LinkedIn](https://www.linkedin.com/in/daniel-lara-mendoza/) - Data Scientist & Backend Developer
 
 ## Licencia
 

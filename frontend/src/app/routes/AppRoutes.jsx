@@ -12,6 +12,8 @@ import Onboarding from '../../features/onboarding/components/Onboarding';
 import Dashboard from '../../features/dashboard/components/Dashboard';
 import Inventory from '../../features/inventory/components/Inventory';
 import Sales from '../../features/sales/components/Sales';
+import ProductList from '../../features/products/components/ProductList';
+import CustomerList from '../../features/customers/components/CustomerList';
 
 const AppRoutes = () => {
   return (
@@ -26,8 +28,8 @@ const AppRoutes = () => {
       {/* Se debe Agregar componente ProtectedRoute cuando implementes autenticación <=<=<=<=<=<=<=<=<=<=<=<= */}
       <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
       <Route path={ROUTES.SALES} element={<Sales />} />
-      <Route path={ROUTES.PRODUCTS} element={<div>Productos (TODO)</div>} />
-      <Route path={ROUTES.CUSTOMERS} element={<div>Clientes (TODO)</div>} />
+      <Route path={ROUTES.PRODUCTS} element={<ProductList />} />
+      <Route path={ROUTES.CUSTOMERS} element={<CustomerList />} />
       <Route path={ROUTES.INVENTORY} element={<Inventory />} />
 
       {/* Redirect to home for unknown routes */}

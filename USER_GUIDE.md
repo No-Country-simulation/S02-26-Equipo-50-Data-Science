@@ -74,40 +74,27 @@ Permite gestionar el catalogo de productos.
 
 **Estado actual:**
 - Backend: Implementado
-- Frontend: En desarrollo
+- Frontend: Implementado
 
-La gestion de productos se realizara a traves de la interfaz de usuario cuando este disponible.
+#### Acceso desde la interfaz
 
-#### Crear Producto (API)
+1. Navega a **Productos** en el menu lateral
+2. Puedes:
+   - Ver todos los productos en lista o tabla
+   - Buscar por nombre o SKU
+   - Filtrar por categoria (ROPA/CALZADO)
+   - Agregar nuevo producto
+   - Editar producto existente
+   - Eliminar producto
 
-```bash
-POST /api/products
-Authorization: Bearer <token>
-Content-Type: application/json
+#### Crear Producto
 
-{
-  "name": "Camisa Manga Larga",
-  "sku": "CML-001",
-  "price": 49.99,
-  "category": "ROPA",
-  "initialStock": 100,
-  "minStock": 10
-}
-```
-
-#### Editar Producto (API)
-
-```bash
-PUT /api/products/:id
-Authorization: Bearer <token>
-```
-
-#### Eliminar Producto (API)
-
-```bash
-DELETE /api/products/:id
-Authorization: Bearer <token>
-```
+Desde la interfaz, haz clic en **"Agregar producto"** y completa:
+- Nombre del producto
+- SKU (codigo unico)
+- Precio en soles (S/)
+- Categoria: ROPA o CALZADO
+- Activo/Inactivo
 
 ### Ventas
 
@@ -115,43 +102,23 @@ Registro de transacciones comerciales.
 
 **Estado actual:**
 - Backend: Implementado
-- Frontend: En desarrollo
+- Frontend: Implementado
 
-#### Nueva Venta (API)
+#### Acceso desde la interfaz
 
-```bash
-POST /api/sales
-Authorization: Bearer <token>
-Content-Type: application/json
+1. Navega a **Ventas** en el menu lateral
+2. Veras el total de ventas del dia
+3. Haz clic en el boton flotante **"+"** para registrar una nueva venta
 
-{
-  "customerId": "uuid-cliente (opcional)",
-  "items": [
-    {
-      "productId": "uuid-producto",
-      "productName": "Camisa",
-      "quantity": 2,
-      "unitPrice": 49.99
-    }
-  ]
-}
-```
+#### Registrar una venta
 
-**Nota:** El `userId` se obtiene automáticamente del token JWT.
+1. Selecciona el producto del inventario
+2. Ingresa la cantidad
+3. El precio se carga automaticamente (puede modificarse)
+4. Selecciona el cliente (opcional)
+5. Confirma el total y registra
 
-#### Listar Ventas (API)
-
-```bash
-GET /api/sales
-Authorization: Bearer <token>
-```
-
-#### Ventas por Fecha (API)
-
-```bash
-GET /api/sales/date-range?startDate=2026-01-01&endDate=2026-01-31
-Authorization: Bearer <token>
-```
+**Nota:** El sistema descuenta automaticamente el stock del inventario.
 
 ### Clientes
 
@@ -159,42 +126,24 @@ Gestion de la base de clientes.
 
 **Estado actual:**
 - Backend: Implementado
-- Frontend: En desarrollo
+- Frontend: Implementado
 
-#### Agregar Cliente (API)
+#### Acceso desde la interfaz
 
-```bash
-POST /api/customers
-Authorization: Bearer <token>
-Content-Type: application/json
+1. Navega a **Clientes** en el menu lateral
+2. Puedes:
+   - Ver todos los clientes en lista o tabla
+   - Buscar por nombre, email o telefono
+   - Agregar nuevo cliente
+   - Editar cliente existente
+   - Eliminar cliente
 
-{
-  "name": "Juan Perez",
-  "email": "juan@correo.com",
-  "phone": "+51 999 999 999"
-}
-```
+#### Agregar Cliente
 
-#### Buscar Cliente (API)
-
-```bash
-GET /api/customers/search?q=juan
-Authorization: Bearer <token>
-```
-
-#### Actualizar Cliente (API)
-
-```bash
-PUT /api/customers/:id
-Authorization: Bearer <token>
-```
-
-#### Eliminar Cliente (API)
-
-```bash
-DELETE /api/customers/:id
-Authorization: Bearer <token>
-```
+Desde la interfaz, haz clic en **"Agregar cliente"** y completa:
+- Nombre del cliente
+- Email (opcional)
+- Telefono (opcional)
 
 ### Inventario
 
@@ -202,62 +151,33 @@ Control de stock y alertas.
 
 **Estado actual:**
 - Backend: Implementado
-- Frontend: En desarrollo
+- Frontend: Implementado
 
-#### Obtener Stock (API)
+#### Acceso desde la interfaz
 
-```bash
-GET /api/inventory
-Authorization: Bearer <token>
-```
+1. Navega a **Productos** en el menu lateral (el inventario esta integrado con productos)
+2. Veras:
+   - Lista de productos con su stock actual
+   - Alerta de productos con stock critico (menos de 3 unidades)
+   - Puedes buscar y filtrar por categoria
 
-#### Obtener Stock Bajo (API)
+#### Gestionar stock
 
-```bash
-GET /api/inventory/low-stock
-Authorization: Bearer <token>
-```
-
-#### Actualizar Stock (API)
-
-```bash
-PUT /api/inventory/product/:productId/stock
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "quantity": 50
-}
-```
-
-O para ajustar (aumentar/disminuir):
-
-```json
-{
-  "adjustment": -5
-}
-```
-
-#### Configurar Stock Minimo (API)
-
-```bash
-PATCH /api/inventory/product/:productId/min-stock
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "minStock": 10
-}
-```
+- Para agregar inventario, edita el producto y configura el stock inicial
+- El stock se descuenta automaticamente al registrar una venta
+- Si un producto llega a menos de 3 unidades, aparecera una alerta en rojo
 
 ### Dashboard
 
 Panel de metricas y analisis.
 
-- Ventas del dia/semana/mes
-- Productos mas vendidos
-- Clientes frecuentes
-- Tendencias de demanda
+**Estado actual:** Implementado
+
+#### Caracteristicas
+
+- Resumen de ventas del dia
+- Total vendido en el dia
+- Acceso rapido a las demas secciones
 
 ---
 
@@ -351,7 +271,7 @@ Actualmente, la recuperacion de contrasena debe realizarse contactando al admini
 
 ### ¿Que pasa si el stock llega a cero?
 
-Actualmente el sistema permite registrar ventas con stock en cero. Esta validacion sera reforzada en futuras versiones para evitar inconsistencias de inventario. Se recomienda mantener productos con stock disponible.
+El sistema permite registrar ventas siempre que haya stock disponible. Si intentas vender mas de lo que hay en inventario, el sistema te mostrara un mensaje de error indicando la cantidad disponible.
 
 ### ¿Puedo tener varias tiendas?
 
@@ -359,7 +279,7 @@ No, actualmente el sistema permite una tienda por usuario.
 
 ### ¿Como funcionan las alertas de stock bajo?
 
-Cuando configuras un "stock minimo" en un producto, el sistema te notificara cuando la cantidad disponible sea igual o inferior a ese valor.
+Cuando un producto tiene menos de 3 unidades en stock, aparecera una alerta en rojo en la seccion de productos indicando que hay stock critico.
 
 ### ¿Puedo exportar mis datos?
 

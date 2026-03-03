@@ -14,6 +14,7 @@ import {
 } from "../../../shared/components/Card";
 import { Separator } from "../../../shared/components/Separator";
 import ROUTES from '../../../app/routes/route.config';
+import { toast } from '../../../shared/hooks/useToast';
 import { Loader2, Facebook } from 'lucide-react';
 import logoDatamark from '../../../assets/datamark.png';
 
@@ -37,6 +38,7 @@ export default function Login() {
       setError('Correo o contraseña incorrectos');
       setIsLoading(false);
     } else {
+      toast.success('¡Bienvenido de nuevo!', 'Inicio de sesión exitoso');
       navigate(ROUTES.DASHBOARD);
     }
   };
@@ -47,9 +49,11 @@ export default function Login() {
     const { error } = await signInWithFacebook();
 
     if (error) {
+      toast.error('Error', error.message || 'No se pudo iniciar sesión con Facebook');
       setError(error.message);
       setIsLoading(false);
     } else {
+      toast.success('¡Bienvenido!', 'Inicio de sesión con Facebook exitoso');
       navigate(ROUTES.DASHBOARD);
     }
   };

@@ -29,12 +29,15 @@ function getTodayLabel() {
 
 function KpiCard({ label, value, sublabel }) {
   return (
-    <Card>
-      <CardContent className="p-5">
-        <p className="text-sm font-medium text-gray-500 mb-1">{label}</p>
-        <p className="text-2xl font-bold text-gray-900">{value}</p>
+    <Card className="rounded-2xl shadow-sm border border-gray-100">
+      <CardContent className="p-6 pt-5">
+        <p className="text-sm font-medium text-gray-500 mb-1">
+          {label}</p>
+        <p className="text-3xl font-bold text-gray-900 tracking-tight">
+          {value}
+        </p>
         {sublabel && (
-          <p className="text-xs text-gray-400 mt-1">{sublabel}</p>
+          <p className="text-xs text-gray-500 mt-2">{sublabel}</p>
         )}
       </CardContent>
     </Card>
@@ -138,7 +141,7 @@ export default function Dashboard() {
 
   return (
     <MainLayout>
-      <div className="space-y-6 pb-24 md:pb-0">
+      <div className="space-y-10 px-4 md:px-6 lg:px-8 pb-24 md:pb-6">
 
         {/* Saludo */}
         <section aria-label="Saludo">
@@ -153,7 +156,7 @@ export default function Dashboard() {
         {/* KPIs */}
         <section
           aria-label="Resumen de ventas"
-          className="grid gap-4 grid-cols-1 sm:grid-cols-3"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           <KpiCard
             label="Ventas de hoy"
@@ -188,7 +191,7 @@ export default function Dashboard() {
             <div
               role="alert"
               aria-live="polite"
-              className="flex items-center justify-between gap-4 rounded-xl border border-orange-200 bg-orange-50 px-5 py-4"
+              className="flex items-center justify-between gap-6 rounded-2xl border border-orange-200 bg-orange-50 px-6 py-5 shadow-sm"
             >
               <div>
                 <p className="font-semibold text-orange-800">
@@ -203,7 +206,7 @@ export default function Dashboard() {
               </div>
               <Link
                 to={ROUTES.INVENTORY}
-                className="shrink-0 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 transition-colors"
+                className="shrink-0 rounded-lg bg-orange-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 transition-colors"
                 aria-label="Ver inventario con stock bajo"
               >
                 Ver inventario
@@ -227,11 +230,11 @@ export default function Dashboard() {
                     return (
                       <li
                         key={sale.id}
-                        className={`flex items-center justify-between px-5 py-4 ${!isLast ? 'border-b border-gray-100' : ''
+                        className={`flex items-center justify-between px-6 py-5 hover:bg-gray-50 transition${!isLast ? 'border-b border-gray-100' : ''
                           }`}
                       >
                         <div>
-                          <p className="font-semibold text-gray-900">
+                          <p className="font-semibold text-gray-900 text-lg">
                             {formatCurrency(sale.total_price)}
                           </p>
                           <p className="text-sm text-gray-500 mt-0.5">
@@ -242,7 +245,7 @@ export default function Dashboard() {
                           </p>
                         </div>
                         <span
-                          className="text-sm text-gray-400 shrink-0 ml-4"
+                          className="text-sm text-gray-400 shrink-0 ml-4 whitespace-nowrap"
                           aria-label={`Hace ${formatRelativeDate(sale.created_at || sale.createdAt)}`}
                         >
                           {formatRelativeDate(sale.created_at || sale.createdAt)}
@@ -264,7 +267,7 @@ export default function Dashboard() {
             </Card>
           ) : (
             <Card>
-              <CardContent className="p-8 text-center">
+              <CardContent className="p-8 pt-5 text-center">
                 <p className="text-gray-500 mb-4">
                   Todavía no registraste ninguna venta.
                 </p>

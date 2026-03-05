@@ -13,7 +13,9 @@ class PrismaSaleRepository extends ISaleRepository {
         data: {
           userId: saleData.userId,
           customerId: saleData.customerId,
+          customerName: saleData.customerName,
           totalAmount: saleData.totalAmount,
+          paymentMethod: saleData.paymentMethod || null,
           items: {
             create: saleData.items.map((item) => ({
               productId: item.productId,
@@ -147,11 +149,11 @@ class PrismaSaleRepository extends ISaleRepository {
         lte: endDate,
       },
     };
-    
+
     if (userId) {
       where.userId = userId;
     }
-    
+
     return await prisma.sale.findMany({
       where,
       include: {

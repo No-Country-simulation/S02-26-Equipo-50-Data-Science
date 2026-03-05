@@ -67,7 +67,7 @@ export function useInventory(categoryFilter = 'todos') {
         initialStock: initialStock || 0,
         minStock: minStock || null,
       });
-      
+
       await fetchData();
       return newProduct;
     } catch (err) {

@@ -46,10 +46,12 @@ export const salesApi = {
 
   create: async (saleData) => {
     try {
-      const { customerId, items } = saleData;
-      
+      const { customerId, customerName, items, paymentMethod } = saleData;
+
       const payload = {
         customerId: customerId || null,
+        customerName: customerName || null,
+        paymentMethod: paymentMethod || 'efectivo',
         items: items.map(item => ({
           productId: item.productId,
           productName: item.productName,

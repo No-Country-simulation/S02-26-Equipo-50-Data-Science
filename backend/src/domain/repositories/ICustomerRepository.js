@@ -6,7 +6,7 @@ class ICustomerRepository {
     throw new Error('Method not implemented');
   }
 
-  async findByEmail(email) {
+  async findByEmail(email, userId) {
     throw new Error('Method not implemented');
   }
 
@@ -26,7 +26,7 @@ class ICustomerRepository {
     throw new Error('Method not implemented');
   }
 
-  async findByPhone(phone) {
+  async findByPhone(phone, userId) {
     throw new Error('Method not implemented');
   }
 }

@@ -30,12 +30,13 @@ class ProductService {
       throw new ValidationError('El SKU ya esta en uso');
     }
 
-    const product = await this.productRepository.create(productData);
+    const { initialStock, minStock, ...data } = productData;
+    const product = await this.productRepository.create(data);
 
     await this.inventoryRepository.create({
       productId: product.id,
-      quantity: productData.initialStock || 0,
-      minStock: productData.minStock || null,
+      quantity: initialStock || 0,
+      minStock: minStock || null,
     });
 
     return product;
@@ -58,8 +59,8 @@ class ProductService {
    * Obtiene todos los productos
    * @returns {Promise<Array>}
    */
-  async getAllProducts() {
-    return await this.productRepository.findAll();
+  async getAllProducts(userId) {
+    return await this.productRepository.findAll(userId);
   }
 
   /**
@@ -67,8 +68,8 @@ class ProductService {
    * @param {string} category
    * @returns {Promise<Array>}
    */
-  async getProductsByCategory(category) {
-    return await this.productRepository.findByCategory(category);
+  async getProductsByCategory(category, userId) {
+    return await this.productRepository.findByCategory(category, userId);
   }
 
   /**
@@ -83,14 +84,21 @@ class ProductService {
       throw new NotFoundError('Producto no encontrado');
     }
 
-    if (productData.sku && productData.sku !== existingProduct.sku) {
-      const skuInUse = await this.productRepository.findBySku(productData.sku);
-      if (skuInUse) {
-        throw new ValidationError('El SKU ya esta en uso');
+    const { initialStock, minStock, ...data } = productData;
+    const updatedProduct = await this.productRepository.update(id, data);
+
+    if (initialStock !== undefined || minStock !== undefined) {
+      const inventory = await this.inventoryRepository.findByProductId(id);
+      if (inventory) {
+        await this.inventoryRepository.update({
+          id: inventory.id,
+          quantity: initialStock !== undefined ? initialStock : inventory.quantity,
+          minStock: minStock !== undefined ? minStock : inventory.minStock,
+        });
       }
     }
 
-    return await this.productRepository.update(id, productData);
+    return updatedProduct;
   }
 
   /**
@@ -103,6 +111,9 @@ class ProductService {
     if (!existingProduct) {
       throw new NotFoundError('Producto no encontrado');
     }
+
+    // Inventory deletion is handled by PrismaProductRepository manually to bypass SQLite constraint issues.
+
     return await this.productRepository.delete(id);
   }
 }

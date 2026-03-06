@@ -1,0 +1,120 @@
+/**
+ * InventoryService.js
+ * Capa de aplicación: Lógica de negocio para operaciones de Inventario
+ * Maneja el control de stock, niveles mínimos y ajustes de inventario
+ */
+import InventoryFactory from '../../domain/factories/createInventory.js';
+
+/**
+ * Servicio de inventario para gestionar el stock de productos
+ * @param {Object} inventoryRepository - Repositorio de inventario
+ * @param {Object} productRepository - Repositorio de productos
+ */
+class InventoryService {
+  /**
+   * @param {Object} inventoryRepository - Repositorio de inventario
+   * @param {Object} productRepository - Repositorio de productos
+   */
+  constructor(inventoryRepository, productRepository) {
+    this.inventoryRepository = inventoryRepository;
+    this.productRepository = productRepository;
+  }
+
+  /**
+   * Obtiene el inventario de un producto específico
+   * @param {string} productId - ID del producto
+   * @returns {Promise<Object>} Datos del inventario
+   * @throws {Error} Si no se encuentra el inventario
+   */
+  async getInventoryByProductId(productId) {
+    
+    const variants = await this.inventoryRepository.findByProductId(productId);
+    if (!variants || variants.length === 0) throw new Error('Inventario no encontrado para este producto');
+
+    
+    return variants.map(v => InventoryFactory({ id: v.id, productId: v.productId, quantity: v.stock, minStock: v.minStock }));
+  }
+
+  /**
+   * Actualiza el stock de un producto a un valor específico
+   * @param {string} productId - ID del producto
+   * @param {number} quantity - Nueva cantidad de stock
+   * @returns {Promise<Object>} Inventario actualizado
+   * @throws {Error} Si el producto no existe o la cantidad es negativa
+   */
+  async updateStock(productId, quantity) {
+    const variants = await this.inventoryRepository.findByProductId(productId);
+    if (!variants || variants.length === 0) throw new Error('Producto no encontrado');
+    if (variants.length > 1) throw new Error('Producto tiene múltiples variantes; actualice la variante específica');
+
+    const variant = variants[0];
+    if (quantity < 0) throw new Error('La cantidad no puede ser negativa');
+
+    const inventoryEntity = InventoryFactory({ id: variant.id, productId: variant.productId, quantity, minStock: variant.minStock });
+    return await this.inventoryRepository.update(inventoryEntity);
+  }
+
+  /**
+   * Obtiene todos los registros de inventario
+   * @returns {Promise<Array>} Lista de inventarios con datos de productos
+   */
+  async getAllInventory() {
+    const allItems = await this.inventoryRepository.findAll();
+    // allItems are variants with product included
+    return allItems.map(item => InventoryFactory({ id: item.id, productId: item.productId, quantity: item.stock, minStock: item.minStock }));
+  }
+
+  /**
+   * Obtiene productos con stock bajo el nivel mínimo
+   * @returns {Promise<Array>} Lista de productos con stock bajo
+   */
+  async getLowStockItems() {
+    const itemsData = await this.inventoryRepository.findLowStock();
+    if (!itemsData) return [];
+    return itemsData.map(data => InventoryFactory({ id: data.id, productId: data.productId, quantity: data.stock, minStock: data.minStock }));
+  }
+
+  /**
+   * Ajusta el stock de un producto (aumenta o disminuye)
+   * @param {string} productId - ID del producto
+   * @param {number} adjustment - Cantidad a ajustar (positivo o negativo)
+   * @returns {Promise<Object>} Inventario actualizado
+   * @throws {Error} Si el producto no existe en inventario
+   */
+  async adjustStock(productId, adjustment) {
+    const variants = await this.inventoryRepository.findByProductId(productId);
+    if (!variants || variants.length === 0) throw new Error('Producto no encontrado en inventario');
+    if (variants.length > 1) throw new Error('Producto tiene múltiples variantes; ajuste la variante específica');
+
+    const variant = variants[0];
+    const inventoryEntity = InventoryFactory({ id: variant.id, productId: variant.productId, quantity: variant.stock, minStock: variant.minStock });
+
+    if (adjustment < 0) {
+      inventoryEntity.decrease(Math.abs(adjustment));
+    } else {
+      inventoryEntity.increase(adjustment);
+    }
+
+    return await this.inventoryRepository.update(inventoryEntity);
+  }
+
+  /**
+   * Establece el nivel mínimo de stock para un producto
+   * @param {string} productId - ID del producto
+   * @param {number} minStock - Nivel mínimo de stock
+   * @returns {Promise<Object>} Inventario actualizado
+   * @throws {Error} Si el producto no existe
+   */
+  async setMinStock(productId, minStock) {
+    const variants = await this.inventoryRepository.findByProductId(productId);
+    if (!variants || variants.length === 0) throw new Error('Producto no encontrado');
+    if (variants.length > 1) throw new Error('Producto tiene múltiples variantes; actualice la variante específica');
+
+    const variant = variants[0];
+    const inventoryEntity = InventoryFactory({ id: variant.id, productId: variant.productId, quantity: variant.stock, minStock: minStock });
+
+    return await this.inventoryRepository.update(inventoryEntity);
+  }
+}
+
+export default InventoryService;

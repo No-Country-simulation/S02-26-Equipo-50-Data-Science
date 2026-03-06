@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(uuid())
+  email     String     @unique
+  password  String
+  name      String
+  store     Store?
+  sales     Sale[]
+  products  Product[]
+  customers Customer[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Store {
+  id          String   @id @default(uuid())
+  name        String
+  category    Category
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Sale {
+  id            String      @id @default(uuid())
+  userId        String
+  customerId    String?
+  customerName  String?
+  totalAmount   Float
+  paymentMethod String?
+
+  user         User        @relation(fields: [userId], references: [id])
+  customer     Customer?   @relation(fields: [customerId], references: [id])
+  items        SaleItem[]
+
+  createdAt    DateTime    @default(now())
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  email     String?
+  phone     String?
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  sales     Sale[]
+  createdAt DateTime @default(now())
+}
+
+model SaleItem {
+  id           String   @id @default(uuid())
+  saleId       String
+  variantId    String
+
+  productName  String
+  quantity     Int
+  unitPrice    Float
+  subtotal     Float
+
+  sale         Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+}
+
+model Product {
+  id        String   @id @default(uuid())
+  name      String
+  sku       String   @unique
+  price     Float
+  category  Category
+  size      String?
+  color     String?
+  active    Boolean  @default(true)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+
+  // Relation to variants (each product can have multiple variants)
+  variants    ProductVariant[]
+  saleItems SaleItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+enum Category {
+  ROPA
+  CALZADO
+}
+
+model ProductVariant {
+  id         String   @id @default(uuid())
+  productId  String
+  sku        String   @unique
+  size       String?
+  color      String?
+  price      Decimal  @db.Decimal(10, 2)
+  stock      Int      @default(0)
+  minStock   Int?
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

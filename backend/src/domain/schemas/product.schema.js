@@ -30,14 +30,14 @@ const ProductVariantSchema = z.object({
  * Define las reglas para crear o actualizar productos
  */
 const ProductSchema = z.object({
-  id: z.string().uuid().optional(),
-  name: z.string().min(1, { error: 'El nombre es obligatorio' }),
-  description: z.string().optional(),
-  category: z.enum(ProductCategory),
-  gender: z.string().optional(),
-  style: z.string().optional(),
-  active: z.boolean().optional().default(true),
-  variants: z.array(ProductVariantSchema).min(1, { error: 'Debe tener al menos una variante' }),
+  id: z.string().optional(),
+  name: z.string().min(1),
+  sku: z.string().min(1),
+  price: z.number().positive(),
+  category: z.enum(Object.values(ProductCategory)),
+  size: z.string().optional().nullable(),
+  color: z.string().optional().nullable(),
+  active: z.boolean().optional(),
 });
 
 export default ProductSchema;

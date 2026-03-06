@@ -1,9 +1,3 @@
-/**
- * ValidationError.js
- * Error personalizado para fallos en validación de datos
- * Se lanza cuando los datos no cumplen con las reglas de validación definidas
- */
-
 import DomainError from './DomainError.js';
 
 /**

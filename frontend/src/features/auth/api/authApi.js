@@ -1,9 +1,3 @@
-/**
- * authApi.js
- * Funciones API para autenticación
- * Maneja login, registro, logout y gestión de sesión de usuario
- */
-
 import { post, get, API_ENDPOINTS } from '../../../app/config/api.config.js';
 
 /**
@@ -31,7 +25,10 @@ export const authApi = {
       const { token, user } = response.data.data;
       localStorage.setItem('authToken', token);
       localStorage.setItem('user', JSON.stringify(user));
-      return user;
+      if (user.store) {
+        localStorage.setItem('onboarding_completed', 'true');
+      }
+      return { user, token };
     }
     throw new Error(response.data.error || 'Error al iniciar sesión');
   },
@@ -42,7 +39,7 @@ export const authApi = {
       const { token, user } = response.data.data;
       localStorage.setItem('authToken', token);
       localStorage.setItem('user', JSON.stringify(user));
-      return user;
+      return { user, token };
     }
     throw new Error(response.data.error || 'Error al registrar usuario');
   },
@@ -53,11 +50,21 @@ export const authApi = {
   },
 
   getCurrentUser: async () => {
-    const response = await get(API_ENDPOINTS.AUTH.REFRESH);
-    if (response.data.success) {
-      return response.data.data;
+    try {
+      const response = await get(API_ENDPOINTS.AUTH.REFRESH);
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error(response.data.error || 'Failed to get user');
+    } catch (error) {
+      if (error.response?.status === 401) {
+        throw new Error('Unauthorized: Token expired or invalid');
+      }
+      if (error.response?.status === 403) {
+        throw new Error('Forbidden: User not found or access denied');
+      }
+      throw new Error(error.message || 'Failed to get user');
     }
-    throw new Error(response.data.error || 'Error al obtener usuario');
   },
 
   getStoredUser: () => {

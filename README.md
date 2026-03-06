@@ -79,66 +79,79 @@ Separación estricta de dominio y framework. Facilita testing, cambios de tecnol
 ## Requisitos Previos
 
 - Node.js 18+
-- npm
+- npm 9+
+- PostgreSQL 14+ (Neon serverless recomendado)
 
-## Instalación
+## ⚡ Inicio Rápido
 
-### Backend
+### 1. Backend
 
 ```bash
 cd backend
 npm install
-```
-
-Crear `.env` basado en `.env.example`:
-
-```env
-PORT=3000
-DATABASE_URL="postgresql://..."
-NODE_ENV=development
-ALLOWED_ORIGINS=http://localhost:5173
-JWT_SECRET=your-secret-key
-```
-
-```bash
+cp .env.example .env
+# Edita .env con tus valores
 npm run prisma:generate
 npm run prisma:db push
 npm run dev
 ```
 
-### Frontend
+### 2. Frontend
 
 ```bash
 cd frontend
 npm install
-```
-
-Crear `.env`:
-
-```env
-VITE_API_URL_DEV=http://localhost:3000/api
-VITE_API_URL_PROD=https://your-railway-app.up.railway.app/api
-```
-
-```bash
 npm run dev
 ```
 
-## API Endpoints
+### 3. Acceder
 
-**Nota:** Todas las rutas (excepto `/api/auth/register` y `/api/auth/login`) requieren el header `Authorization: Bearer <token>`.
+- **Frontend:** http://localhost:5173
+- **Backend API:** http://localhost:3000/api
+- **Health Check:** http://localhost:3000/api/health
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | /api/auth/register | Registrar usuario |
-| POST | /api/auth/login | Iniciar sesión |
-| GET | /api/auth/me | Obtener usuario actual |
-| GET | /api/health | Health check |
-| CRUD | /api/products | Gestión de productos |
-| CRUD | /api/sales | Gestión de ventas |
-| CRUD | /api/customers | Gestión de clientes |
-| CRUD | /api/inventory | Gestión de inventario |
-| CRUD | /api/stores | Gestión de tiendas |
+## 📚 Documentación Completa
+
+- [Guía de Configuración Detallada](./SETUP.md)
+- [Guía de Usuario](./USER_GUIDE.md)
+- [Referencia de API](#api-endpoints)
+
+## Configuración del Proyecto
+
+### Backend - Archivo .env
+
+```env
+PORT=3000
+NODE_ENV=development
+JWT_SECRET=tu-secreto-muy-seguro-cambiar-en-produccion
+DATABASE_URL=postgresql://usuario:password@localhost:5432/datamarkdb
+ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
+```
+
+### Frontend - Archivo .env
+
+```env
+VITE_API_URL_DEV=http://localhost:3000/api
+VITE_API_URL_PROD=https://tu-api-railway.up.railway.app/api
+```
+
+## Seguridad
+
+✅ **Implementado:**
+- Hashing de contraseñas con bcrypt (cost factor 10)
+- Autenticación via JWT en todas las rutas protegidas
+- Validación de input con Zod
+- CORS configurado via ALLOWED_ORIGINS
+- Secrets almacenados en variables de entorno
+- Rutas protegidas con middleware de autenticación
+- Token incluido automáticamente en peticiones desde frontend
+
+⚠️ **Mejoras Futuras:**
+- OAuth con Facebook Login
+- sistema de recuperación de contraseña
+- Two-factor authentication (2FA)
+- Rate limiting por IP
+- HTTPS en desarrollo (mkcert)
 
 ## Deployment
 

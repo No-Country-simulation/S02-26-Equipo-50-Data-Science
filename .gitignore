@@ -48,5 +48,4 @@ Thumbs.db
 
 # Database
 *.db
-*.sqlite
-.aider*
+*.sqliteCOMPLETION_SUMMARY.md

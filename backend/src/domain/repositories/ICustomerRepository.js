@@ -14,12 +14,7 @@ class ICustomerRepository {
     throw new Error('Method not implemented');
   }
 
-  /**
-   * Busca un cliente por su correo electrónico
-   * @param {string} email - Correo electrónico
-   * @throws {Error} Método no implementado
-   */
-  async findByEmail(email) {
+  async findByEmail(email, userId) {
     throw new Error('Method not implemented');
   }
 
@@ -59,12 +54,7 @@ class ICustomerRepository {
     throw new Error('Method not implemented');
   }
 
-  /**
-   * Busca un cliente por su teléfono
-   * @param {string} phone - Teléfono
-   * @throws {Error} Método no implementado
-   */
-  async findByPhone(phone) {
+  async findByPhone(phone, userId) {
     throw new Error('Method not implemented');
   }
 }

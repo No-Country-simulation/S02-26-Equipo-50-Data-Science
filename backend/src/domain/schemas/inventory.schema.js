@@ -15,9 +15,9 @@ import { z } from 'zod';
  * @property {number} [minStock] - Stock mínimo para alertas (opcional)
  */
 const InventorySchema = z.object({
-  id: z.uuid().optional(),
-  productId: z.uuid({ error: 'El ID del producto debe ser un UUID válido' }),
-  quantity: z.number().int().min(0, { error: 'La cantidad no puede ser negativa' }),
+  id: z.string().optional(),
+  productId: z.string(),
+  quantity: z.number().int().min(0),
   minStock: z.number().int().optional().nullable(),
 });
 

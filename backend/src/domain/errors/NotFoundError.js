@@ -1,9 +1,3 @@
-/**
- * NotFoundError.js
- * Error personalizado para entidades no encontradas
- * Se lanza cuando se intenta acceder a un recurso que no existe
- */
-
 import DomainError from './DomainError.js';
 
 /**

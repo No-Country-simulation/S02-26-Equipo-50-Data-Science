@@ -40,7 +40,7 @@ class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-    
+
     const user = await this.userRepository.create({
       name: userData.name,
       email: userData.email,
@@ -54,6 +54,11 @@ class AuthService {
         id: user.id,
         name: user.name,
         email: user.email,
+        store: user.store ? {
+          id: user.store.id,
+          name: user.store.name,
+          category: user.store.category
+        } : null,
       },
       token,
     };
@@ -89,6 +94,11 @@ class AuthService {
         id: user.id,
         name: user.name,
         email: user.email,
+        store: user.store ? {
+          id: user.store.id,
+          name: user.store.name,
+          category: user.store.category
+        } : null,
       },
       token,
     };
@@ -138,7 +148,11 @@ class AuthService {
       id: user.id,
       name: user.name,
       email: user.email,
-      store: user.store,
+      store: user.store ? {
+        id: user.store.id,
+        name: user.store.name,
+        category: user.store.category
+      } : null,
     };
   }
 }

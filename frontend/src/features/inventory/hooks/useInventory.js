@@ -14,7 +14,7 @@ export function getStockStatus(quantity) {
   return 'good';
 }
 
-export function useInventory(categoryFilter = 'todos') {
+export function useInventory(categoryFilter = 'Todas las categorías') {
   const [products, setProducts] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,7 +53,7 @@ export function useInventory(categoryFilter = 'todos') {
     fetchData();
   }, [fetchData]);
 
-  const filteredProducts = categoryFilter === 'todos'
+  const filteredProducts = categoryFilter === 'Todas las categorías'
     ? products
     : products.filter((p) => p.category === categoryFilter);
 
@@ -67,7 +67,7 @@ export function useInventory(categoryFilter = 'todos') {
         initialStock: initialStock || 0,
         minStock: minStock || null,
       });
-      
+
       await fetchData();
       return newProduct;
     } catch (err) {

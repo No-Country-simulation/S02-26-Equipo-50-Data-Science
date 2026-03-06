@@ -1,8 +1,10 @@
 // AppRoutes.jsx
 // Main routes configuration
 
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import AnimatedPage from '../../shared/components/AnimatedPage';
 import ROUTES from './route.config';
+import MainLayout from '../../shared/layouts/MainLayout';
 
 
 import Landing from '../../features/landing/components/Landing';
@@ -19,18 +21,19 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* ===== RUTAS PÚBLICAS ===== */}
-      <Route path={ROUTES.LANDING} element={<Landing />} />
-      <Route path={ROUTES.LOGIN} element={<Login />} />
-      <Route path={ROUTES.REGISTER} element={<Register />} />
-      <Route path={ROUTES.ONBOARDING} element={<Onboarding />} />
+      <Route path={ROUTES.LANDING} element={<AnimatedPage><Landing /></AnimatedPage>} />
+      <Route path={ROUTES.LOGIN} element={<AnimatedPage><Login /></AnimatedPage>} />
+      <Route path={ROUTES.REGISTER} element={<AnimatedPage><Register /></AnimatedPage>} />
+      <Route path={ROUTES.ONBOARDING} element={<AnimatedPage><Onboarding /></AnimatedPage>} />
 
       {/* ===== RUTAS PROTEGIDAS ===== */}
-      {/* Se debe Agregar componente ProtectedRoute cuando implementes autenticación <=<=<=<=<=<=<=<=<=<=<=<= */}
-      <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
-      <Route path={ROUTES.SALES} element={<Sales />} />
-      <Route path={ROUTES.PRODUCTS} element={<ProductList />} />
-      <Route path={ROUTES.CUSTOMERS} element={<CustomerList />} />
-      <Route path={ROUTES.INVENTORY} element={<Inventory />} />
+      <Route element={<MainLayout />}>
+        <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+        <Route path={ROUTES.SALES} element={<Sales />} />
+        <Route path={ROUTES.PRODUCTS} element={<ProductList />} />
+        <Route path={ROUTES.CUSTOMERS} element={<CustomerList />} />
+        <Route path={ROUTES.INVENTORY} element={<Inventory />} />
+      </Route>
 
       {/* Redirect to home for unknown routes */}
       <Route path="*" element={<Navigate to="/" replace />} />

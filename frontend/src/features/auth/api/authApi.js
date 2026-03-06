@@ -10,7 +10,11 @@ export const authApi = {
       const { token, user } = response.data.data;
       localStorage.setItem('authToken', token);
       localStorage.setItem('user', JSON.stringify(user));
-      return user;
+      // Si el usuario ya tiene tienda, marcar onboarding como completado
+      if (user.store) {
+        localStorage.setItem('onboarding_completed', 'true');
+      }
+      return { user, token };
     }
     throw new Error(response.data.error || 'Login failed');
   },
@@ -21,7 +25,7 @@ export const authApi = {
       const { token, user } = response.data.data;
       localStorage.setItem('authToken', token);
       localStorage.setItem('user', JSON.stringify(user));
-      return user;
+      return { user, token };
     }
     throw new Error(response.data.error || 'Registration failed');
   },

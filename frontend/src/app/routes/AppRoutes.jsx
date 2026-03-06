@@ -1,11 +1,8 @@
-// AppRoutes.jsx
-// Main routes configuration
-
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import AnimatedPage from '../../shared/components/AnimatedPage';
+import ProtectedRoute from '../../shared/components/ProtectedRoute';
 import ROUTES from './route.config';
 import MainLayout from '../../shared/layouts/MainLayout';
-
 
 import Landing from '../../features/landing/components/Landing';
 import Login from '../../features/auth/components/Login';
@@ -20,14 +17,18 @@ import CustomerList from '../../features/customers/components/CustomerList';
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* ===== RUTAS PÚBLICAS ===== */}
       <Route path={ROUTES.LANDING} element={<AnimatedPage><Landing /></AnimatedPage>} />
       <Route path={ROUTES.LOGIN} element={<AnimatedPage><Login /></AnimatedPage>} />
       <Route path={ROUTES.REGISTER} element={<AnimatedPage><Register /></AnimatedPage>} />
       <Route path={ROUTES.ONBOARDING} element={<AnimatedPage><Onboarding /></AnimatedPage>} />
 
-      {/* ===== RUTAS PROTEGIDAS ===== */}
-      <Route element={<MainLayout />}>
+      <Route 
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
         <Route path={ROUTES.SALES} element={<Sales />} />
         <Route path={ROUTES.PRODUCTS} element={<ProductList />} />
@@ -35,7 +36,6 @@ const AppRoutes = () => {
         <Route path={ROUTES.INVENTORY} element={<Inventory />} />
       </Route>
 
-      {/* Redirect to home for unknown routes */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

@@ -1,6 +1,3 @@
-// ValidationError.js
-// Error when data validation fails
-
 import DomainError from './DomainError.js';
 
 class ValidationError extends DomainError {

@@ -1,6 +1,3 @@
-// authApi.js
-// API calls for authentication
-
 import { post, get, API_ENDPOINTS } from '../../../app/config/api.config.js';
 
 export const authApi = {
@@ -10,7 +7,6 @@ export const authApi = {
       const { token, user } = response.data.data;
       localStorage.setItem('authToken', token);
       localStorage.setItem('user', JSON.stringify(user));
-      // Si el usuario ya tiene tienda, marcar onboarding como completado
       if (user.store) {
         localStorage.setItem('onboarding_completed', 'true');
       }
@@ -36,11 +32,21 @@ export const authApi = {
   },
 
   getCurrentUser: async () => {
-    const response = await get(API_ENDPOINTS.AUTH.REFRESH);
-    if (response.data.success) {
-      return response.data.data;
+    try {
+      const response = await get(API_ENDPOINTS.AUTH.REFRESH);
+      if (response.data.success) {
+        return response.data.data;
+      }
+      throw new Error(response.data.error || 'Failed to get user');
+    } catch (error) {
+      if (error.response?.status === 401) {
+        throw new Error('Unauthorized: Token expired or invalid');
+      }
+      if (error.response?.status === 403) {
+        throw new Error('Forbidden: User not found or access denied');
+      }
+      throw new Error(error.message || 'Failed to get user');
     }
-    throw new Error(response.data.error || 'Failed to get user');
   },
 
   getStoredUser: () => {

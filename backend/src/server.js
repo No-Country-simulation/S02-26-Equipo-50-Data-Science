@@ -26,6 +26,16 @@ import errorHandler from './infrastructure/web/middlewares/errorHandler.js';
 
 dotenv.config();
 
+// Validación de JWT_SECRET
+if (!process.env.JWT_SECRET) {
+  console.error('❌ CRÍTICO: JWT_SECRET no está definida en variables de entorno');
+  console.error('   Por favor define JWT_SECRET en tu archivo .env');
+  console.error('   Ejemplo: JWT_SECRET=tu-secreto-muy-seguro-aqui');
+  process.exit(1);
+}
+
+console.log('✅ JWT_SECRET encontrada');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 

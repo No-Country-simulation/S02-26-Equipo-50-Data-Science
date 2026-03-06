@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -23,7 +23,7 @@ model User {
 model Store {
   id          String   @id @default(uuid())
   name        String
-  category    String
+  category    Category
   userId      String   @unique
   user        User     @relation(fields: [userId], references: [id])
   createdAt   DateTime @default(now())
@@ -75,7 +75,7 @@ model Product {
   name      String
   sku       String   @unique
   price     Float
-  category  String
+  category  Category
   size      String?
   color     String?
   active    Boolean  @default(true)
@@ -87,6 +87,10 @@ model Product {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+enum Category {
+  ROPA
+  CALZADO
 }
 
 model Inventory {

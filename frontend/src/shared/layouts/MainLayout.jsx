@@ -48,7 +48,6 @@ export default function MainLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Mobile Header */}
       <header className="sticky top-0 z-40 bg-white border-b border-gray-200 md:hidden">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
@@ -65,7 +64,6 @@ export default function MainLayout({ children }) {
           </button>
         </div>
 
-        {/* Solo mostrar el botón de cerrar sesión en mobile (la nav inferior gestiona la navegación) */}
         {mobileMenuOpen && (
           <nav className="absolute top-full left-0 right-0 bg-white border-b shadow-lg">
             <div className="p-2">

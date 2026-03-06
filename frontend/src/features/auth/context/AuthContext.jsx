@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem('authToken');
         const storedUser = localStorage.getItem('user');
 
+        // If no auth data is stored, just set loading to false and return
         if (!token || !storedUser) {
             setIsLoading(false);
             return;
@@ -30,23 +31,27 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(true);
 
             // Then verify with the backend
-            const userData = await authApi.getCurrentUser();
-            // Re-enrich with saved categories since backend doesn't return full array
-            if (savedCategories && userData?.store) {
-                userData.store.categories = JSON.parse(savedCategories);
+            try {
+                const userData = await authApi.getCurrentUser();
+                // Re-enrich with saved categories since backend doesn't return full array
+                if (savedCategories && userData?.store) {
+                    userData.store.categories = JSON.parse(savedCategories);
+                }
+                setUser(userData);
+                localStorage.setItem('user', JSON.stringify(userData));
+            } catch (verifyError) {
+                console.warn('Could not verify user with backend, using cached data:', verifyError.message);
+                // Backend verification failed, but we keep the cached user data
+                // This prevents continuous failed requests on the auth endpoint
             }
-            setUser(userData);
-            localStorage.setItem('user', JSON.stringify(userData));
         } catch (error) {
             console.error('Auth verification failed:', error);
-            // Only clear if it's a genuine auth error (e.g. 401)
-            if (error.message?.includes('401') || error.message?.includes('failed')) {
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('user');
-                localStorage.removeItem('onboarding_completed');
-                setUser(null);
-                setIsAuthenticated(false);
-            }
+            // Clear auth data if there's an issue
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('onboarding_completed');
+            setUser(null);
+            setIsAuthenticated(false);
         } finally {
             setIsLoading(false);
         }

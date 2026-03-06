@@ -1,6 +1,3 @@
-// AppProviders.jsx
-// Main context providers wrapper
-
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '../../features/auth/context/AuthContext';
 
